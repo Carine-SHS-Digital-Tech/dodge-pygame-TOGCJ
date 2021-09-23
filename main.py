@@ -20,6 +20,29 @@ class FallingObject(pygame.sprite.Sprite):
     def moveFallingObjects(self,distance):
         if self.rect.y <= 470:
             self.rect.y= self.rect.y + distance
+
+    def deleteFallingObjects(self):
+        if self.rect.y > 470:
+            self.kill()
+
+class Character(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image= pygame.Surface([50,68])
+        self.image.set_colorkey(black)
+
+        self.rect= self.image.get_rect()
+        self.rect.x= 310
+        self.rect.y= 420
+        self.image.blit(pygame.image.load('Superhero.png'),(0,0))
+
+    def moveCharacter(self,movement):
+        if self.rect.x >= 5 and self.rect.x <=645:
+            self.rect.x= self.rect.x + movement
+        if self.rect.x < 5:
+            self.rect.x= 5
+        if self.rect.x > 645:
+            self.rect.x= 645
 pygame.init()                               # Pygame is initialised (starts running)
 
 screen = pygame.display.set_mode([700,500]) # Set the width and height of the screen [width,height]
@@ -34,6 +57,12 @@ white    = ( 255, 255, 255)                 # used throughout the game instead o
 allFallingObjects= pygame.sprite.Group()
 
 nextApple= pygame.time.get_ticks() + 2500
+
+charactersGroup= pygame.sprite.Group()
+character= Character()
+charactersGroup.add(character)
+movement= 0
+
 # -------- Main Program Loop -----------
 while done == False:
 
@@ -46,13 +75,16 @@ while done == False:
         nextObject= FallingObject()
         nextObject.setImage('Apple.png')
         allFallingObjects.add(nextObject)
-        nextApple= pygame.time.get_ticks() + 15
+        nextApple= pygame.time.get_ticks() + 750
 
     for eachObject in (allFallingObjects.sprites()):
-        eachObject.moveFallingObjects(5)
+        eachObject.moveFallingObjects(3)
+
+        eachObject.deleteFallingObjects()
 
     screen.blit(background_image, [0,0])
     allFallingObjects.draw(screen)
+    charactersGroup.draw(screen)
     pygame.display.flip()                   # Go ahead and update the screen with what we've drawn.
     clock.tick(20)                          # Limit to 20 frames per second
 
